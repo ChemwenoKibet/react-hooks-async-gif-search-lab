@@ -1,30 +1,29 @@
-import React, {useState, useEffect} from 'react'
+import React,{ useState,useEffect} from 'react'
 import GifList from './GifList'
 import GifSearch from './GifSearch'
+const GifListContainer = () => {
 
-function GifListContainer() {
+    const[gif, setGif] = useState([])
+    const [search, setSearch] = useState();
+    
+    const apiKey='rvt8DVZnVqnm2mJZbUX2jdTR7v3ybde5';
 
-    const [dataFetch, setDataFetch] = useState()
-    const [search, setSearch] = useState("")
-
-    useEffect(() => {
-        fetch(`https://api.giphy.com/v1/gifs/search?q=${search === ""? "dolphin":search}&api_key=saanLrcouTbMFfTg26rXD2MrLPGObE7A&rating=g`)
-        .then(response => response.json())
-        .then((dataFetch) => setDataFetch(dataFetch.data.slice(0, 3)))
-    }, [search])
-    console.log(dataFetch)
-
-
-    function submitHandler (e) {
-      e.preventDefault()
-      // setDataFetch(e.target.value)
-    }
+    useEffect(()=>{
+        fetch(`https://api.giphy.com/v1/gifs/search?q=${search}&api_key=${apiKey}&rating=g`)
+        .then((res)=>res.json())
+        .then(({data})=>{
+            const gifs = data.slice(0,3).map((gif) => ({ url: gif.images.original.url }));
+            setGif(gifs);
+            
+        })
+    
+    },[search])
 
 
   return (
-    <div>
-      <GifSearch setSearch={setSearch} handler = {submitHandler}/>
-      <GifList dataFetch = {dataFetch}/>
+    <div className='gif-container'>
+     <GifList  gifs={gif} />
+      <GifSearch onSubmit={setSearch} />
     </div>
   )
 }
